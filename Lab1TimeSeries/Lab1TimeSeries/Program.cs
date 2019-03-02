@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+//1 is used
 namespace Lab1TimeSeries
 {
     class Program
@@ -14,6 +15,7 @@ namespace Lab1TimeSeries
             List<List<double>> m;
             public Matrix()
             {
+                //All right
                 m = new List<List<double>>();
             }
             public Matrix(List<List<double>> inp)
@@ -23,30 +25,39 @@ namespace Lab1TimeSeries
             public Matrix(double[,] inp)
             {
                 int c = inp.GetLength(0); //Column Length
-                int r = inp.Length / inp.GetLength(0); //Row Length
+                int r = inp.GetLength(1); //Row Length
                 m = Nulificator(c, r);
 
                 for (int i = 0; i < c; i++)
                 {
                     for (int j = 0; j < r; j++)
                     {
-                        m[j][i] = inp[i, j];
+                        m[i][j] = inp[i, j];
 
                     }
                 }
             }
             public override string ToString()
             {
-                return "";
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < Rows(); i++)
+                {
+                    for (int j = 0; j < Columns(); j++)
+                    {
+                        sb.Append(m[i][j].ToString() + "\t");
+                    }
+                    sb.Append("\n");
+                }
+                return sb.ToString();
             }
-            int Columns() { return m.Count; }
-            int Rows() { return m[0].Count; }
+            int Columns() { return m[0].Count; }
+            int Rows() { return m.Count; }
             public static List<List<double>> Nulificator(int Rows, int Columns)
             {
                 List<List<double>> temp = new List<List<double>>();
-                for (int i = 0; i < Columns; i++)
+                for (int i = 0; i < Rows; i++)
                 {
-                    temp.Add(new List<double>(new double[Rows]));
+                    temp.Add(new List<double>(new double[Columns]));
                 }
 
 
@@ -70,12 +81,13 @@ namespace Lab1TimeSeries
                     {
                         for (int j = 0; j < c1; j++)
                         {
-                            temp.m[j][i] = 0;
+                            temp.m[i][j] = 0;
                             for (int k = 0; k < a1; k++) // OR k<b.GetLength(0)
-                                temp.m[j][i] += m1.m[k][i] * m2.m[j][k];
+                                temp.m[i][j] += m1.m[i][k] * m2.m[k][j];
                         }
                     }
                 }
+                else Console.WriteLine("Error #1 Wrong matrix dimensions!");
                 return temp;
                 //Value = c1.Value + c2.Value
             }
@@ -86,8 +98,8 @@ namespace Lab1TimeSeries
             Matrix a = new Matrix(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 }, { 7, 8, 9 } });
             Matrix b = new Matrix(new double[,] { { 1 }, { 2 }, { 3 } });
             Matrix result = a * b;
-
-
+            Console.WriteLine(result.ToString());
+            Console.ReadLine();
         }
     }
 }
