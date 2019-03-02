@@ -23,7 +23,7 @@ namespace Lab1TimeSeries
                 {
                     temp.m.Add(new List<double>(line.Split(';').Select(x => Convert.ToDouble(x))));
                     // Use a tab to indent each line of the file.
-                    Console.WriteLine("\t" + line);
+                    //Console.WriteLine("\t" + line);
                 }
 
                 return temp;
@@ -342,12 +342,19 @@ namespace Lab1TimeSeries
 
         static void Main(string[] args)
         {
+            string Af;
+            Console.Write("A = "); Af = Console.ReadLine() + ".csv";
+            string Bf;
+            Console.Write("b = "); Bf = Console.ReadLine() + ".csv";
+            string Cf;
+            Console.Write("c = "); Cf = Console.ReadLine() + ".csv";
 
-            Matrix A = Matrix.ToLoad("A.csv");//Matrix a = new Matrix(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 }, { 7, 8, 9 } });
-            Matrix b = Matrix.ToLoad("b.csv");//Matrix b = new Matrix(new double[,] { { 1 }, { 2 }, { 3 } });
+            Matrix A = Matrix.ToLoad(Af);//Matrix a = new Matrix(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 }, { 7, 8, 9 } });
+            Matrix b = Matrix.ToLoad(Bf);//Matrix b = new Matrix(new double[,] { { 1 }, { 2 }, { 3 } });
             Matrix c = (A.ToTranspose() * A).ToInverse()*A.ToTranspose() * b;//a * b;
-            c.ToSave("c.csv");
-            Console.WriteLine(c.ToString());
+            c.ToSave(Cf);
+            //Console.WriteLine(c.ToString());
+            Console.WriteLine("Press Any Key To Continue");
             Console.ReadLine();
         }
     }
