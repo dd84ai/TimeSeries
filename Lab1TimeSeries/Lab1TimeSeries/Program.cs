@@ -11,7 +11,35 @@ namespace Lab1TimeSeries
 
         public class Matrix
         {
+            public static Matrix ToLoad(string FileName)
+            {
+                var temp = new Matrix();
 
+                string[] lines = System.IO.File.ReadAllLines(
+                    System.IO.Directory.GetParent(System.IO.Directory.GetParent(
+                        Environment.CurrentDirectory).ToString())+"\\" + FileName);
+
+                foreach (string line in lines)
+                {
+                    temp.m.Add(new List<double>(line.Split(';').Select(x => Convert.ToDouble(x))));
+                    // Use a tab to indent each line of the file.
+                    Console.WriteLine("\t" + line);
+                }
+
+                return temp;
+            }
+            public void ToSave(string FileName)
+            {
+
+                using (System.IO.StreamWriter file =
+            new System.IO.StreamWriter(System.IO.Directory.GetParent(System.IO.Directory.GetParent(
+                        Environment.CurrentDirectory).ToString()) + "\\" + FileName))
+                {
+                            file.WriteLine(ToCSV());
+                }
+
+
+            }
             Tuple<double[][], int[]> LUPDecomposition(double[][] A)
             {
                 int n = A.Length - 1;
@@ -255,6 +283,20 @@ namespace Lab1TimeSeries
                 }
                 return sb.ToString();
             }
+            public string ToCSV()
+            {
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < Rows(); i++)
+                {
+                    for (int j = 0; j < Columns(); j++)
+                    {
+                        if (j!=0) sb.Append(";");
+                        sb.Append(m[i][j].ToString());
+                    }
+                    sb.Append("\n");
+                }
+                return sb.ToString();
+            }
             int Columns() { return m[0].Count; }
             int Rows() { return m.Count; }
             public static List<List<double>> Nulificator(int Rows, int Columns)
@@ -300,10 +342,12 @@ namespace Lab1TimeSeries
 
         static void Main(string[] args)
         {
-            Matrix a = new Matrix(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 }, { 7, 8, 9 } });
-            Matrix b = new Matrix(new double[,] { { 1 }, { 2 }, { 3 } });
-            Matrix result = (a.ToTranspose() * a).ToInverse()*a.ToTranspose();//a * b;
-            Console.WriteLine(result.ToString());
+
+            Matrix A = Matrix.ToLoad("A.csv");//Matrix a = new Matrix(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 }, { 7, 8, 9 } });
+            Matrix b = Matrix.ToLoad("b.csv");//Matrix b = new Matrix(new double[,] { { 1 }, { 2 }, { 3 } });
+            Matrix c = (A.ToTranspose() * A).ToInverse()*A.ToTranspose() * b;//a * b;
+            c.ToSave("c.csv");
+            Console.WriteLine(c.ToString());
             Console.ReadLine();
         }
     }
