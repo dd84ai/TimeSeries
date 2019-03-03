@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+//using Acc
 //1 is used
 namespace Lab1TimeSeries
 {
@@ -218,12 +219,31 @@ namespace Lab1TimeSeries
             {
                 m = inp;
             }
+            public Matrix(double inp)
+            {
+                m = new List<List<double>>();
+                m.Add(new List<double>() { inp });
+                //Matrix(new double[,] { { m1.m[0][0] - m2.m[0][0] } });
+            }
             public double[][] ToArray()
             {
                 double[][] temp = new double[Rows()][];
                 for (int i = 0; i < Rows(); i++)
                     temp[i] = m[i].ToArray();
                 return temp;
+            }
+            public double[,] ToArrayWithComma()
+            {
+                double[,] temp = new double[Rows(),Columns()];
+                for (int i = 0; i < Rows(); i++)
+                    for (int j = 0; j < Columns(); j++)
+                        temp[i, j] = m[i][j];
+                return temp;
+            }
+            public int Rank()
+            {
+                return GFG.rankOfMatrix(ToArrayWithComma(), Rows(), Columns());
+                //return 1;
             }
             public Matrix ToTranspose()
             {
@@ -270,6 +290,33 @@ namespace Lab1TimeSeries
                     }
                 }
             }
+            public double Mean()
+            {
+                int count = 0;
+                double sum = 0;
+                foreach (var listik in m)
+                {
+                    foreach (var element in listik)
+                    {
+                        sum += element; count++;
+                    }
+                }
+                return sum / count;
+            }
+            public double Disp()
+            {
+                int count = 0;
+                double sum = 0;
+                double Meanie = Mean();
+                foreach (var listik in m)
+                {
+                    foreach (var element in listik)
+                    {
+                        sum += (element - Meanie)* (element - Meanie); count++;
+                    }
+                }
+                return sum / count;
+            }
             public override string ToString()
             {
                 StringBuilder sb = new StringBuilder();
@@ -297,8 +344,9 @@ namespace Lab1TimeSeries
                 }
                 return sb.ToString();
             }
-            int Columns() { return m[0].Count; }
-            int Rows() { return m.Count; }
+            public double SingleValue() { return m[0][0]; }
+            public int Columns() { return m[0].Count; }
+            public int Rows() { return m.Count; }
             public static List<List<double>> Nulificator(int Rows, int Columns)
             {
                 List<List<double>> temp = new List<List<double>>();
@@ -309,6 +357,13 @@ namespace Lab1TimeSeries
 
 
                 return temp;
+            }
+            public static Matrix operator -(Matrix m1, Matrix m2)
+            {
+                if (m1.Rows() != 1 || m1.Columns() != 1) Console.WriteLine("Error operator -");
+                if (m2.Rows() != 1 || m2.Columns() != 1) Console.WriteLine("Error operator -");
+
+                return new Matrix(m1.m[0][0] - m2.m[0][0]);
             }
             public static Matrix operator *(Matrix m1, Matrix m2)
             {
@@ -342,17 +397,67 @@ namespace Lab1TimeSeries
 
         static void Main(string[] args)
         {
-            string Af;
-            Console.Write("A = "); Af = Console.ReadLine() + ".csv";
-            string Bf;
-            Console.Write("b = "); Bf = Console.ReadLine() + ".csv";
-            string Cf;
-            Console.Write("c = "); Cf = Console.ReadLine() + ".csv";
+            Matrix A,b,C,X;
+            Console.Write("press 1 for Disp Analyze, 2 for hypotise checking");
+            int Answer = -1;
+            while (Answer != 0)
+            {
+                Answer = Convert.ToInt32(Console.ReadLine());
+                switch (Answer)
+                {
+                    case 0: //for exit
+                        break;
+                    case 1:
+                        string Af;
+                        Console.Write("A = "); Af = Console.ReadLine() + ".csv";
+                        string Bf;
+                        Console.Write("b = "); Bf = Console.ReadLine() + ".csv";
+                        string Cf;
+                        Console.Write("c = "); Cf = Console.ReadLine() + ".csv";
 
-            Matrix A = Matrix.ToLoad(Af);//Matrix a = new Matrix(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 }, { 7, 8, 9 } });
-            Matrix b = Matrix.ToLoad(Bf);//Matrix b = new Matrix(new double[,] { { 1 }, { 2 }, { 3 } });
-            Matrix c = (A.ToTranspose() * A).ToInverse()*A.ToTranspose() * b;//a * b;
-            c.ToSave(Cf);
+                        A = Matrix.ToLoad(Af);//Matrix a = new Matrix(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 }, { 7, 8, 9 } });
+                        b = Matrix.ToLoad(Bf);//Matrix b = new Matrix(new double[,] { { 1 }, { 2 }, { 3 } });
+                        C = (A.ToTranspose() * A).ToInverse() * A.ToTranspose() * b;//a * b;
+                        C.ToSave(Cf);
+                        break;
+
+                    case 2:
+
+                        //Change S1,S2,S3 and q = 1, q = 1, q = 2;
+                        X = Matrix.ToLoad("Ap2.csv");
+                        b = Matrix.ToLoad("bp2.csv");
+                        C = Matrix.ToLoad("S3.csv");
+                        Matrix Theta = (X.ToTranspose() * X).ToInverse() * X.ToTranspose() * b;
+                        Console.WriteLine("Theta = \n" + Theta.ToString());
+                        Matrix m = new Matrix(0);
+                        Matrix LeftSide = (C.ToTranspose() * Theta - m).ToTranspose() *
+                        (C.ToTranspose() * (X.ToTranspose() * X).ToInverse() * C).ToInverse() *
+                        (C.ToTranspose() * Theta - m);
+
+                        
+                        double q = 1;// C.ToTranspose().Rank(); //Console.WriteLine("q = " + q);
+                        double N = b.Rows(); //Console.WriteLine("N = " + N);
+                        double r = X.Rank(); //Console.WriteLine("r = " + r);
+                        double N_r = N - r; //Console.WriteLine("N_r = " + N_r);
+                        double Mean = b.Mean(); //Console.WriteLine("Mean = " + Mean);
+                        double Disp = b.Disp(); //Console.WriteLine("Disp = " + Disp);
+                        double RightSide = q * Disp * 0.5;
+                        Console.WriteLine("LeftSide = " + LeftSide.ToString());
+                        Console.WriteLine("RightSide = " + RightSide.ToString());
+                        Console.WriteLine("Отвержена = " + (LeftSide.SingleValue() > RightSide));
+                        //Console.WriteLine("b = \n" + b.ToString());
+                        //Console.WriteLine("Theta = \n" + Theta.ToString());
+                        //GFG.SubMain();
+                        //Console.WriteLine("rank X = " + X.Rank());
+                        //Console.WriteLine("rank b = " + b.Rank());
+                        //Console.WriteLine("rank C = " + C.Rank());
+                        //Console.WriteLine("rank Ct = " + C.ToTranspose().Rank());
+                        //Matrix CtTheta = C.ToTranspose()*
+                        break;
+
+                }
+            }
+            
             //Console.WriteLine(c.ToString());
             Console.WriteLine("Press Any Key To Continue");
             Console.ReadLine();
