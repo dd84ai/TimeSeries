@@ -360,10 +360,15 @@ namespace Lab1TimeSeries
             }
             public static Matrix operator -(Matrix m1, Matrix m2)
             {
-                if (m1.Rows() != 1 || m1.Columns() != 1) Console.WriteLine("Error operator -");
-                if (m2.Rows() != 1 || m2.Columns() != 1) Console.WriteLine("Error operator -");
+                if (m1.Rows() != m2.Rows() || m1.Columns() != m2.Columns()) Console.WriteLine("Error operator -");
 
-                return new Matrix(m1.m[0][0] - m2.m[0][0]);
+                List<List<double>> result = Nulificator(m1.Rows(), m1.Columns());
+
+                for (int i = 0; i < m1.Rows(); i++)
+                    for (int j = 0; j < m1.Columns(); j++)
+                        result[i][j] = m1.m[i][j] - m2.m[i][j];
+
+                return new Matrix(result);
             }
             public static Matrix operator *(Matrix m1, Matrix m2)
             {
@@ -426,7 +431,8 @@ namespace Lab1TimeSeries
                         //Change S1,S2,S3 and q = 1, q = 1, q = 2;
                         X = Matrix.ToLoad("Ap2.csv");
                         b = Matrix.ToLoad("bp2.csv");
-                        C = Matrix.ToLoad("S3.csv");
+                        Matrix btrue = Matrix.ToLoad("bp3true.csv");
+                        C = Matrix.ToLoad("SA3.csv");
                         Matrix Theta = (X.ToTranspose() * X).ToInverse() * X.ToTranspose() * b;
                         Console.WriteLine("Theta = \n" + Theta.ToString());
                         Matrix m = new Matrix(0);
@@ -434,14 +440,24 @@ namespace Lab1TimeSeries
                         (C.ToTranspose() * (X.ToTranspose() * X).ToInverse() * C).ToInverse() *
                         (C.ToTranspose() * Theta - m);
 
-                        
+                        Matrix LeftSide1 = (C.ToTranspose() * Theta - m).ToTranspose();
+                        Matrix LeftSide2 = (C.ToTranspose() * (X.ToTranspose() * X));
+                        Matrix LeftSide3 = (C.ToTranspose() * (X.ToTranspose() * X).ToInverse());
+                        Matrix LeftSide4 = (C.ToTranspose() * (X.ToTranspose() * X).ToInverse() * C).ToInverse();
+                        Matrix LeftSide5 = (C.ToTranspose() * Theta - m);
+                        Console.WriteLine("test1\n" + LeftSide1.ToString());
+                        Console.WriteLine("test2\n" + LeftSide2.ToString());
+                        Console.WriteLine("test3\n" + LeftSide3.ToString());
+                        Console.WriteLine("test4\n" + LeftSide4.ToString());
+                        Console.WriteLine("test5\n" + LeftSide5.ToString());
+
                         double q = 1;// C.ToTranspose().Rank(); //Console.WriteLine("q = " + q);
                         double N = b.Rows(); //Console.WriteLine("N = " + N);
                         double r = X.Rank(); //Console.WriteLine("r = " + r);
                         double N_r = N - r; //Console.WriteLine("N_r = " + N_r);
                         double Mean = b.Mean(); //Console.WriteLine("Mean = " + Mean);
-                        double Disp = b.Disp(); //Console.WriteLine("Disp = " + Disp);
-                        double RightSide = q * Disp * 0.5;
+                        double Sigma = ((b - btrue).ToTranspose()* (b - btrue)).SingleValue()/ N_r;//b.Disp(); //Console.WriteLine("Disp = " + Disp);
+                        double RightSide = q * Sigma * 0.68;
                         Console.WriteLine("LeftSide = " + LeftSide.ToString());
                         Console.WriteLine("RightSide = " + RightSide.ToString());
                         Console.WriteLine("Отвержена = " + (LeftSide.SingleValue() > RightSide));
