@@ -415,9 +415,9 @@ namespace Lab1TimeSeries
                         string Cf;
                         Console.Write("c = "); Cf = Console.ReadLine() + ".csv";
 
-                        A = Matrix.ToLoad(Af);//Matrix a = new Matrix(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 }, { 7, 8, 9 } });
-                        b = Matrix.ToLoad(Bf);//Matrix b = new Matrix(new double[,] { { 1 }, { 2 }, { 3 } });
-                        C = (A.ToTranspose() * A).ToInverse() * A.ToTranspose() * b;//a * b;
+                        A = Matrix.ToLoad(Af);
+                        b = Matrix.ToLoad(Bf);
+                        C = (A.ToTranspose() * A).ToInverse() * A.ToTranspose() * b;
                         C.ToSave(Cf);
                         break;
 
@@ -435,7 +435,7 @@ namespace Lab1TimeSeries
                         (C.ToTranspose() * Theta - m);
 
                         
-                        double q = 1;// C.ToTranspose().Rank(); //Console.WriteLine("q = " + q);
+                        double q = 2;// C.ToTranspose().Rank(); //Console.WriteLine("q = " + q);
                         double N = b.Rows(); //Console.WriteLine("N = " + N);
                         double r = X.Rank(); //Console.WriteLine("r = " + r);
                         double N_r = N - r; //Console.WriteLine("N_r = " + N_r);
@@ -447,18 +447,11 @@ namespace Lab1TimeSeries
                         Console.WriteLine("Отвержена = " + (LeftSide.SingleValue() > RightSide));
                         //Console.WriteLine("b = \n" + b.ToString());
                         //Console.WriteLine("Theta = \n" + Theta.ToString());
-                        //GFG.SubMain();
-                        //Console.WriteLine("rank X = " + X.Rank());
-                        //Console.WriteLine("rank b = " + b.Rank());
-                        //Console.WriteLine("rank C = " + C.Rank());
-                        //Console.WriteLine("rank Ct = " + C.ToTranspose().Rank());
-                        //Matrix CtTheta = C.ToTranspose()*
                         break;
 
                 }
             }
             
-            //Console.WriteLine(c.ToString());
             Console.WriteLine("Press Any Key To Continue");
             Console.ReadLine();
         }
